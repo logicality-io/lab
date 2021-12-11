@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Logicality.Extensions.Hosting" Version="0.2.1" />
+    <PackageReference Include="Logicality.Extensions.Hosting.Docker" Version="0.2.1" />
+    <PackageReference Include="Logicality.Extensions.Hosting.SerilogConsoleLogging" Version="0.2.1-alpha.0.108" />
+  </ItemGroup>
+
 </Project>
