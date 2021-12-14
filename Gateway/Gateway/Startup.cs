@@ -23,7 +23,7 @@ namespace Gateway
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            //services.AddControllers();
 
             // add BFF services and server-side session management
             services.AddBff()
@@ -74,23 +74,23 @@ namespace Gateway
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            //app.UseDefaultFiles();
+            //app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseRouting();
 
             // add CSRF protection and status code handling for API endpoints
             app.UseBff();
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()
+                /*endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsBffApiEndpoint();
+                    .AsBffApiEndpoint();*/
 
-                endpoints.MapBffManagementEndpoints();
+                //endpoints.MapBffManagementEndpoints();
 
                 // enable proxying to remote API
                 endpoints.MapRemoteBffApiEndpoint("/remote", "https://demo.duendesoftware.com/api/test")

@@ -34,11 +34,19 @@ public class Program
                 services.AddTransient<Gateway1HostedService>();
                 services.AddTransient<Gateway2HostedService>();
 
-                services.AddSequentialHostedServices("root", r => r
-                    .Host<RedisHostedService>()
-                    .Host<Gateway1HostedService>()
-                    .Host<Gateway2HostedService>()
-                    .Host<GatewayLoadBalancerHostedService>());
+                services
+                    .AddSequentialHostedServices("root",
+                        r =>
+                        {
+                            r.HostParallel("gateways", p =>
+                            {
+                                p.Host<RedisHostedService>()
+                                    .Host<Gateway1HostedService>()
+                                    .Host<Gateway2HostedService>();
+                            });
+                            r.Host<GatewayLoadBalancerHostedService>();
+                        });
+
             })
             .UseSerilog(logger);
     }

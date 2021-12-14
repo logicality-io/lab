@@ -1,5 +1,3 @@
-using Yarp.ReverseProxy.Configuration;
-
 namespace DevServer.LoadBalancer
 {
     public class LoadBalancerStartup

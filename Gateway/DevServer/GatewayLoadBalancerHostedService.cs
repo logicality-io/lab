@@ -1,4 +1,6 @@
-﻿using DevServer.LoadBalancer;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using DevServer.LoadBalancer;
 using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
 using Yarp.ReverseProxy.Configuration;
@@ -21,11 +23,15 @@ public class GatewayLoadBalancerHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        var routes = new Dictionary<string, RouteConfig>();
         var routeConfig = new RouteConfig
         {
             ClusterId = "gateway",
             Match     = new RouteMatch { Path = "{**catch-all}" }
         };
+        routes.Add("route1", routeConfig);
+
+        var clusters = new Dictionary<string, ClusterConfig>();
         var clusterConfig = new ClusterConfig
         {
             ClusterId = "gateway",
@@ -35,10 +41,12 @@ public class GatewayLoadBalancerHostedService : IHostedService
                 { "gateway-2", new DestinationConfig { Address = $"http://localhost:{_context.Gateway2.Port}" } }
             }
         };
+        clusters.Add("gateway", clusterConfig);
 
-        var proxyConfig = new ProxyConfig(
-            new[] { routeConfig },
-            new[] { clusterConfig });
+        var proxyConfig = new ProxyConfig(routes, clusters);
+
+        var json = JsonSerializer.Serialize(proxyConfig,
+            new JsonSerializerOptions{ DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
 
         var config = new ConfigurationBuilder()
             .AddObject(proxyConfig)
@@ -46,7 +54,7 @@ public class GatewayLoadBalancerHostedService : IHostedService
         _webHost = WebHost
             .CreateDefaultBuilder<LoadBalancerStartup>(Array.Empty<string>())
             .UseUrls("http://+:0")
-            .UseConfiguration(config)
+            .UseConfiguration(config )
             .Build();
 
         await _webHost.StartAsync(cancellationToken);
@@ -63,7 +71,9 @@ public class GatewayLoadBalancerHostedService : IHostedService
 
     internal class ProxyConfig
     {
-        public ProxyConfig(RouteConfig[] routes, ClusterConfig[] clusters)
+        public ProxyConfig(
+            Dictionary<string, RouteConfig> routes,
+            Dictionary<string, ClusterConfig> clusters)
         {
             ReverseProxy = new Data
             {
@@ -76,9 +86,9 @@ public class GatewayLoadBalancerHostedService : IHostedService
 
         public class Data
         {
-            public IReadOnlyList<RouteConfig> Routes { get; set; }
+            public Dictionary<string, RouteConfig> Routes { get; set; }
 
-            public IReadOnlyList<ClusterConfig> Clusters { get; set; }
+            public Dictionary<string, ClusterConfig> Clusters { get; set; }
         }
     }
 }
