@@ -12,6 +12,24 @@ namespace DevServer
             set => Add(nameof(RedisHostedService), value);
         }
 
+        public GatewayLoadBalancerHostedService LoadBalancer
+        {
+            get => Get<GatewayLoadBalancerHostedService>(nameof(LoadBalancer));
+            set => Add(nameof(LoadBalancer), value);
+        }
+
+        public Gateway1HostedService Gateway1
+        {
+            get => Get<Gateway1HostedService>(nameof(Gateway1));
+            set => Add(nameof(Gateway1), value);
+        }
+
+        public Gateway2HostedService Gateway2
+        {
+            get => Get<Gateway2HostedService>(nameof(Gateway2));
+            set => Add(nameof(Gateway2), value);
+        }
+
         private void Add(string name, IHostedService hostedService)
         {
             lock (_hostedServices)

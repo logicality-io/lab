@@ -35,34 +35,34 @@ namespace Gateway
                 options.DefaultChallengeScheme = "oidc";
                 options.DefaultSignOutScheme = "oidc";
             })
-                .AddCookie("cookie", options =>
-                {
-                    options.Cookie.Name = "__Host-bff";
-                    options.Cookie.SameSite = SameSiteMode.Strict;
-                })
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = "https://demo.duendesoftware.com";
-                    options.ClientId = "interactive.confidential";
-                    options.ClientSecret = "secret";
-                    options.ResponseType = "code";
-                    options.ResponseMode = "query";
+            .AddCookie("cookie", options =>
+            {
+                options.Cookie.Name = "__Host-bff";
+                options.Cookie.SameSite = SameSiteMode.Strict;
+            })
+            .AddOpenIdConnect("oidc", options =>
+            {
+                options.Authority = "https://demo.duendesoftware.com";
+                options.ClientId = "interactive.confidential";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code";
+                options.ResponseMode = "query";
 
-                    options.GetClaimsFromUserInfoEndpoint = true;
-                    options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.SaveTokens = true;
 
-                    options.Scope.Clear();
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
-                    options.Scope.Add("api");
-                    options.Scope.Add("offline_access");
-                    
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
-                });
+                options.Scope.Clear();
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("api");
+                options.Scope.Add("offline_access");
+                
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app)

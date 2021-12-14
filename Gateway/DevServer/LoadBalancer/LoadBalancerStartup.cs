@@ -17,7 +17,7 @@ namespace DevServer.LoadBalancer
         {
             services
                 .AddReverseProxy()
-                .LoadFromConfig(_configuration.GetSection("LoadBalancer"));
+                .LoadFromConfig(_configuration.GetSection("ReverseProxy"));
         }
 
         public void Configure(IApplicationBuilder app)
