@@ -12,19 +12,19 @@ namespace Gateway
 {
     public class Startup
     {
+        private readonly IConfiguration      _configuration;
         private readonly IWebHostEnvironment _environment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            _environment = environment;
+            _configuration = configuration;
+            _environment   = environment;
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddControllers();
-
             // add BFF services and server-side session management
             services.AddBff()
                 .AddServerSideSessions();
@@ -74,26 +74,19 @@ namespace Gateway
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseDefaultFiles();
-            //app.UseStaticFiles();
-
             app.UseAuthentication();
             app.UseRouting();
 
             // add CSRF protection and status code handling for API endpoints
             app.UseBff();
-            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                /*endpoints.MapControllers()
-                    .RequireAuthorization()
-                    .AsBffApiEndpoint();*/
-
-                //endpoints.MapBffManagementEndpoints();
-
-                // enable proxying to remote API
-                endpoints.MapRemoteBffApiEndpoint("/remote", "https://demo.duendesoftware.com/api/test")
+                endpoints
+                    .MapRemoteBffApiEndpoint(
+                        "/remote",
+                        "https://demo.duendesoftware.com/api/test",
+                        false)
                     .RequireAccessToken();
             });
         }
