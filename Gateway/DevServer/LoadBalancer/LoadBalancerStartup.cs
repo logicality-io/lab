@@ -1,11 +1,13 @@
-namespace LoadBalancer
+using Yarp.ReverseProxy.Configuration;
+
+namespace DevServer.LoadBalancer
 {
-    public class Startup
+    public class LoadBalancerStartup
     {
         private readonly IConfiguration      _configuration;
         private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public LoadBalancerStartup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
             _environment   = environment;
@@ -15,7 +17,7 @@ namespace LoadBalancer
         {
             services
                 .AddReverseProxy()
-                .LoadFromConfig(_configuration.GetSection("ReverseProxy"));
+                .LoadFromConfig(_configuration.GetSection("LoadBalancer"));
         }
 
         public void Configure(IApplicationBuilder app)

@@ -1,17 +1,19 @@
-﻿using Microsoft.AspNetCore;
+﻿using DevServer.LoadBalancer;
+using Microsoft.AspNetCore;
 
 namespace DevServer;
 
-public class LoadBalancerHostedService : IHostedService
+public class GatewayLoadBalancerHostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
     private          IWebHost?            _webHost;
     public const     int                  Port = 5000;
 
-    public LoadBalancerHostedService(HostedServiceContext context)
+    public GatewayLoadBalancerHostedService(HostedServiceContext context)
     {
         _context = context;
     }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var config = new ConfigurationBuilder()
@@ -21,7 +23,7 @@ public class LoadBalancerHostedService : IHostedService
             })
             .Build();
         _webHost = WebHost
-            .CreateDefaultBuilder<Startup>(Array.Empty<string>())
+            .CreateDefaultBuilder<LoadBalancerStartup>(Array.Empty<string>())
             .UseUrls($"http://+:{Port}")
             .UseConfiguration(config)
             .Build();
@@ -31,27 +33,4 @@ public class LoadBalancerHostedService : IHostedService
 
     public Task? StopAsync(CancellationToken cancellationToken)
         => _webHost?.StopAsync(cancellationToken);
-
-    public class Startup
-    {
-        private readonly IWebHostEnvironment _environment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            _environment = environment;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-        }
-    }
 }
