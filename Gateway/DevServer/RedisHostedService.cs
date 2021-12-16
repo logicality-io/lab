@@ -1,7 +1,6 @@
 ﻿using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
 using Logicality.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace DevServer;
 

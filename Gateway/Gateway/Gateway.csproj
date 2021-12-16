@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AuthCore\AuthCore.csproj" />
+  </ItemGroup>
+
 </Project>

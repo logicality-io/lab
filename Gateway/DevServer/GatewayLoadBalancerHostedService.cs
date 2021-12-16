@@ -1,7 +1,6 @@
 ﻿using DevServer.LoadBalancer;
 using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
-using Serilog;
 using Yarp.ReverseProxy.Configuration;
 
 namespace DevServer;

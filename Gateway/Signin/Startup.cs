@@ -1,56 +1,74 @@
-﻿// Copyright (c) Duende Software. All rights reserved.
-// See LICENSE in the project root for license information.
+﻿using AuthCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+namespace Signin;
 
-namespace Signin
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public IWebHostEnvironment Environment { get; }
+        services.AddControllers();
+        services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostTicketConfiguration>();
+        services.AddSingleton<IDataProtectionProvider, InsecureDataProtectionProvider>();
 
-        public Startup(IWebHostEnvironment environment)
+        services.AddAuthentication(options =>
         {
-            Environment = environment;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // uncomment, if you want to add an MVC-based UI
-            //services.AddControllersWithViews();
-
-            var builder = services.AddIdentityServer(options =>
+            options.DefaultScheme = "cookie";
+            options.DefaultChallengeScheme = "oidc";
+            options.DefaultSignOutScheme = "oidc";
+        })
+            .AddCookie("cookie", options =>
             {
-                // https://docs.duendesoftware.com/identityserver/v5/fundamentals/resources/
-                options.EmitStaticAudienceClaim = true;
+                options.Cookie.Name = CookieConfiguration.CookieName;
+                options.Cookie.SameSite = CookieConfiguration.SameSiteMode;
+                options.Cookie.HttpOnly = true;
             })
-                .AddInMemoryIdentityResources(Config.IdentityResources)
-                .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryClients(Config.Clients);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            if (Environment.IsDevelopment())
+            .AddOpenIdConnect("oidc", options =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                options.Authority = "https://demo.duendesoftware.com";
+                options.ClientId = "interactive.confidential";
+                options.ClientSecret = "secret";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.ResponseMode = OpenIdConnectResponseMode.Query;
 
-            // uncomment if you want to add MVC
-            //app.UseStaticFiles();
-            //app.UseRouting();
-            
-            app.UseIdentityServer();
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.MapInboundClaims = false;
+                options.SaveTokens = true;
 
-            // uncomment, if you want to add MVC
-            //app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapDefaultControllerRoute();
-            //});
+                options.Scope.Clear();
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("api");
+                options.Scope.Add("offline_access");
+
+                options.TokenValidationParameters = new()
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
+            });
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
         }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+        }
+
+        app.UseStaticFiles();
+
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
     }
 }
