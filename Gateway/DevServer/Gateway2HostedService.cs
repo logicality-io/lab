@@ -9,10 +9,12 @@ public class Gateway2HostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
     private          IWebHost?            _webHost;
+    private const    int                  DefaultPort = 5002;
 
     public Gateway2HostedService(HostedServiceContext context)
     {
         _context = context;
+        Port     = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; set; }
@@ -27,9 +29,9 @@ public class Gateway2HostedService : IHostedService
             .Build();
         _webHost = WebHost
             .CreateDefaultBuilder<Startup>(Array.Empty<string>())
-            .UseUrls("http://+:0")
+            .UseUrls($"http://+:{Port}")
             .UseConfiguration(config)
-            .UseSerilog()
+            .ConfigureLogging(l => _context.ConfigureLogging(l))
             .Build();
 
         await _webHost.StartAsync(cancellationToken);

@@ -67,8 +67,6 @@ namespace Gateway
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSerilogRequestLogging();
-            
             if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

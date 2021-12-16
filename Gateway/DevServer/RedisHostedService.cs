@@ -7,8 +7,9 @@ namespace DevServer;
 
 public class RedisHostedService : DockerHostedService
 {
+    private const    int                  DefaultHostPort = 6379;
     private readonly HostedServiceContext _context;
-    private const    int                  HostPort = 6379;
+    private readonly int                  _hostPort;
             
     public RedisHostedService(
         HostedServiceContext         context, 
@@ -17,6 +18,7 @@ public class RedisHostedService : DockerHostedService
         : base(logger, leaveRunning)
     {
         _context = context;
+        _hostPort = context.FixedPorts ? DefaultHostPort : 0;
     }
 
     protected override IContainerService CreateContainerService()
@@ -25,7 +27,7 @@ public class RedisHostedService : DockerHostedService
             .WithName(ContainerName)
             .UseImage("redis:6-alpine")
             .ReuseIfExists()
-            .ExposePort(HostPort, HostPort)
+            .ExposePort(_hostPort, DefaultHostPort)
             .Build();
 
     protected override string ContainerName => "ExampleGatewayRedis";

@@ -7,11 +7,6 @@ namespace DevServer;
 public class Program
 {
     internal static async Task Main(string[] args)
-        => await CreateHostBuilder(args, new HostedServiceContext())
-            .Build()
-            .RunAsync();
-
-    public static IHostBuilder CreateHostBuilder(string[] args, HostedServiceContext context)
     {
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -24,7 +19,14 @@ public class Program
 
         var logger = loggerConfiguration.CreateLogger();
 
-        return new HostBuilder()
+        void ConfigureLogging(ILoggingBuilder l) => l.AddSerilog(logger);
+        var context = new HostedServiceContext(ConfigureLogging);
+        var host = CreateHostBuilder(args, context).Build();
+        await host.RunAsync();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args, HostedServiceContext context) =>
+        new HostBuilder()
             .UseConsoleLifetime()
             .ConfigureServices(services =>
             {
@@ -40,15 +42,12 @@ public class Program
                         {
                             r.HostParallel("gateways", p =>
                             {
-                                p.Host<RedisHostedService>()
+                                p.Host<SeqHostedService>()
+                                    .Host<RedisHostedService>()
                                     .Host<Gateway1HostedService>()
                                     .Host<Gateway2HostedService>();
                             });
                             r.Host<GatewayLoadBalancerHostedService>();
                         });
-
-            })
-            .UseSerilog(logger);
-    }
-
+            });
 }

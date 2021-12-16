@@ -1,22 +1,23 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using DevServer.LoadBalancer;
+﻿using DevServer.LoadBalancer;
 using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
+using Serilog;
 using Yarp.ReverseProxy.Configuration;
 
 namespace DevServer;
 
 public class GatewayLoadBalancerHostedService : IHostedService
 {
+    private const    int                                       DefaultPort = 5000;
     private readonly HostedServiceContext                      _context;
     private readonly ILogger<GatewayLoadBalancerHostedService> _logger;
     private          IWebHost?                                 _webHost;
 
     public GatewayLoadBalancerHostedService(HostedServiceContext context, ILogger<GatewayLoadBalancerHostedService> logger)
     {
-        _context     = context;
-        _logger = logger;
+        _context = context;
+        _logger  = logger;
+        Port     = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; private set; }
@@ -45,8 +46,8 @@ public class GatewayLoadBalancerHostedService : IHostedService
 
         var proxyConfig = new ProxyConfig(routes, clusters);
 
-        var json = JsonSerializer.Serialize(proxyConfig,
-            new JsonSerializerOptions{ DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+        /*var json = JsonSerializer.Serialize(proxyConfig,
+            new JsonSerializerOptions{ DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });*/
 
         var config = new ConfigurationBuilder()
             .AddObject(proxyConfig)
@@ -54,7 +55,7 @@ public class GatewayLoadBalancerHostedService : IHostedService
         _webHost = WebHost
             .CreateDefaultBuilder<LoadBalancerStartup>(Array.Empty<string>())
             .UseUrls("http://+:0")
-            .UseConfiguration(config )
+            .UseConfiguration(config)
             .Build();
 
         await _webHost.StartAsync(cancellationToken);

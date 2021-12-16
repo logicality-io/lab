@@ -1,10 +1,20 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Serilog.Core;
 
 namespace DevServer
 {
     public class HostedServiceContext
     {
         private readonly Dictionary<string, IHostedService> _hostedServices = new();
+
+        public HostedServiceContext(Action<ILoggingBuilder> configureLogging, bool fixedPorts = true)
+        {
+            ConfigureLogging = configureLogging;
+            FixedPorts            = fixedPorts;
+        }
+
+        public Action<ILoggingBuilder> ConfigureLogging { get; }
+        public bool                    FixedPorts       { get; }
 
         public RedisHostedService Redis
         {
@@ -28,6 +38,11 @@ namespace DevServer
         {
             get => Get<Gateway2HostedService>(nameof(Gateway2));
             set => Add(nameof(Gateway2), value);
+        }
+        public SeqHostedService Seq
+        {
+            get => Get<SeqHostedService>(nameof(Seq));
+            set => Add(nameof(Seq), value);
         }
 
         private void Add(string name, IHostedService hostedService)

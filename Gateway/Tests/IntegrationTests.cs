@@ -3,13 +3,24 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DevServer;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Shouldly;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tests;
 
 public class IntegrationTests
 {
+    private readonly ITestOutputHelper _outputHelper;
+
+    public IntegrationTests(ITestOutputHelper outputHelper)
+    {
+        _outputHelper = outputHelper;
+    }
+
     [Fact]
     public async Task Can_make_authenticated_request()
     {
@@ -22,13 +33,14 @@ public class IntegrationTests
         TODO: sequence diagram.
         */
 
-        var context     = new HostedServiceContext();
-        var hostBuilder = Program.CreateHostBuilder(Array.Empty<string>(), context);
-        var host        = hostBuilder.Build();
+        void ConfigureLogging(ILoggingBuilder l) => l.AddXUnit(_outputHelper);
+        var context     = new HostedServiceContext(ConfigureLogging, fixedPorts: false);
+        var hostBuilder = Program
+            .CreateHostBuilder(Array.Empty<string>(), context)
+            .ConfigureLogging(l => l.AddXUnit(_outputHelper));
+        var host = hostBuilder.Build();
 
         await host.StartAsync();
-
-        //await Task.Delay(5000); // TODO get signal from host.
 
         var client = new HttpClient
         {

@@ -1,7 +1,6 @@
 ﻿using Gateway;
 using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
-using Serilog;
 
 namespace DevServer;
 
@@ -9,10 +8,12 @@ public class Gateway1HostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
     private          IWebHost?            _webHost;
+    private const    int                  DefaultPort = 5001;
 
     public Gateway1HostedService(HostedServiceContext context)
     {
         _context = context;
+        Port     = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; set; }
@@ -27,9 +28,9 @@ public class Gateway1HostedService : IHostedService
             .Build();
         _webHost = WebHost
             .CreateDefaultBuilder<Startup>(Array.Empty<string>())
-            .UseUrls($"http://+:0")
+            .UseUrls($"http://+:{Port}")
             .UseConfiguration(config)
-            .UseSerilog()
+            .ConfigureLogging(l => _context.ConfigureLogging(l))
             .Build();
 
         await _webHost.StartAsync(cancellationToken);
