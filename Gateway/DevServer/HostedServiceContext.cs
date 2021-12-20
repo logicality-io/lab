@@ -14,6 +14,7 @@ namespace DevServer
         }
 
         public Action<ILoggingBuilder> ConfigureLogging { get; }
+
         public bool                    FixedPorts       { get; }
 
         public RedisHostedService Redis
@@ -43,6 +44,12 @@ namespace DevServer
         {
             get => Get<SeqHostedService>(nameof(Seq));
             set => Add(nameof(Seq), value);
+        }
+
+        public SignInHostedService SignIn
+        {
+            get => Get<SignInHostedService>(nameof(SignIn));
+            set => Add(nameof(SignIn), value);
         }
 
         private void Add(string name, IHostedService hostedService)

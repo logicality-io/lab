@@ -19,7 +19,7 @@ public class GatewayLoadBalancerHostedService : IHostedService
         Port     = context.FixedPorts ? DefaultPort : 0;
     }
 
-    public int Port { get; private set; }
+    public int Port { get; }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -37,8 +37,8 @@ public class GatewayLoadBalancerHostedService : IHostedService
             ClusterId = "gateway",
             Destinations = new Dictionary<string, DestinationConfig>
             {
-                { "gateway-1", new DestinationConfig { Address = $"http://localhost:{_context.Gateway1.Port}" } },
-                { "gateway-2", new DestinationConfig { Address = $"http://localhost:{_context.Gateway2.Port}" } }
+                { "gateway-1", new DestinationConfig { Address = $"http://gw1.int.all-localhost.com:{_context.Gateway1.Port}" } },
+                { "gateway-2", new DestinationConfig { Address = $"http://gw2.int.all-localhost.com:{_context.Gateway2.Port}" } }
             }
         };
         clusters.Add("gateway", clusterConfig);
@@ -53,17 +53,13 @@ public class GatewayLoadBalancerHostedService : IHostedService
             .Build();
         _webHost = WebHost
             .CreateDefaultBuilder<LoadBalancerStartup>(Array.Empty<string>())
-            .UseUrls("http://+:0")
+            .UseUrls($"http://+:{Port}")
             .UseConfiguration(config)
             .Build();
 
         await _webHost.StartAsync(cancellationToken);
 
-        Port = _webHost.GetServerUris()[0].Port;
-
         _context.LoadBalancer = this;
-
-        _logger.LogInformation($"Loadbalancer listenting on http://localhost:{Port}");
     }
 
     public Task? StopAsync(CancellationToken cancellationToken)

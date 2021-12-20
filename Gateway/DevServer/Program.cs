@@ -40,11 +40,14 @@ public class Program
                     .AddSequentialHostedServices("root",
                         r =>
                         {
-                            r.HostParallel("gateways", p =>
+                            r.HostParallel("containers", p =>
                             {
                                 p.Host<SeqHostedService>()
-                                    .Host<RedisHostedService>()
-                                    .Host<Gateway1HostedService>()
+                                    .Host<RedisHostedService>();
+                            });
+                            r.HostParallel("gateways", p =>
+                            {
+                                p.Host<Gateway1HostedService>()
                                     .Host<Gateway2HostedService>();
                             });
                             r.Host<GatewayLoadBalancerHostedService>();

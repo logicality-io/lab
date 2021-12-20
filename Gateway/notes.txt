@@ -1,0 +1,2 @@
+1. Lazy/Runtime lookup of gateway configuration.
+2. Tenant awaree rate limiting middleware.
