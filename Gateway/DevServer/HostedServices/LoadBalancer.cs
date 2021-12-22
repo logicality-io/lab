@@ -1,22 +1,20 @@
-﻿using Logicality.AspNetCore.Hosting;
-using Logicality.ExampleGateway.DevServer.LoadBalancer;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Yarp.ReverseProxy.Configuration;
 
-namespace Logicality.ExampleGateway.DevServer;
+namespace Logicality.ExampleGateway.DevServer.HostedServices;
 
-public class LoadBalancerHostedService : IHostedService
+public class LoadBalancer : IHostedService
 {
-    private const int DefaultPort = 5000;
-    private readonly HostedServiceContext _context;
-    private readonly ILogger<LoadBalancerHostedService> _logger;
-    private IWebHost? _webHost;
+    private const    int                   DefaultPort = 5000;
+    private readonly HostedServiceContext  _context;
+    private readonly ILogger<LoadBalancer> _logger;
+    private          IWebHost?             _webHost;
 
-    public LoadBalancerHostedService(HostedServiceContext context, ILogger<LoadBalancerHostedService> logger)
+    public LoadBalancer(HostedServiceContext context, ILogger<LoadBalancer> logger)
     {
         _context = context;
-        _logger = logger;
-        Port = context.FixedPorts ? DefaultPort : 0;
+        _logger  = logger;
+        Port     = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; }
@@ -37,16 +35,13 @@ public class LoadBalancerHostedService : IHostedService
             ClusterId = "gateway",
             Destinations = new Dictionary<string, DestinationConfig>
             {
-                { "gateway-1", new DestinationConfig { Address = $"http://gw1.int.all-localhost.com:{_context.Gateway1.Port}" } },
-                { "gateway-2", new DestinationConfig { Address = $"http://gw2.int.all-localhost.com:{_context.Gateway2.Port}" } }
+                { "gateway-1", new DestinationConfig { Address = _context.Gateway1.Address} },
+                { "gateway-2", new DestinationConfig { Address = _context.Gateway2.Address} }
             }
         };
         clusters.Add("gateway", clusterConfig);
 
         var proxyConfig = new ProxyConfig(routes, clusters);
-
-        /*var json = JsonSerializer.Serialize(proxyConfig,
-            new JsonSerializerOptions{ DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });*/
 
         var config = new ConfigurationBuilder()
             .AddObject(proxyConfig)
@@ -55,15 +50,51 @@ public class LoadBalancerHostedService : IHostedService
             .CreateDefaultBuilder<LoadBalancerStartup>(Array.Empty<string>())
             .UseUrls($"http://+:{Port}")
             .UseConfiguration(config)
+            .ConfigureLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                _context.ConfigureLogging(loggingBuilder);
+            })
             .Build();
 
         await _webHost.StartAsync(cancellationToken);
+
+        _logger.LogInformation($"Load Balancer Running on http://app.all-localhost.com:{Port}");
 
         _context.LoadBalancer = this;
     }
 
     public Task? StopAsync(CancellationToken cancellationToken)
         => _webHost?.StopAsync(cancellationToken);
+
+    public class LoadBalancerStartup
+    {
+        private readonly IConfiguration      _configuration;
+        private readonly IWebHostEnvironment _environment;
+
+        public LoadBalancerStartup(IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            _configuration = configuration;
+            _environment   = environment;
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services
+                .AddReverseProxy()
+                .LoadFromConfig(_configuration.GetSection("ReverseProxy"));
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapReverseProxy();
+            });
+        }
+    }
 
     internal class ProxyConfig
     {

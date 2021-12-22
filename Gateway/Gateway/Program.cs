@@ -1,11 +1,11 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
-using System;
 
-namespace Gateway
+namespace Logicality.ExampleGateway.Gateway
 {
     public class Program
     {

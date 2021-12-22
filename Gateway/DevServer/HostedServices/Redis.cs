@@ -2,16 +2,16 @@
 using Ductus.FluentDocker.Services;
 using Logicality.Extensions.Hosting;
 
-namespace Logicality.ExampleGateway.DevServer;
+namespace Logicality.ExampleGateway.DevServer.HostedServices;
 
-public class RedisHostedService : DockerHostedService
+public class Redis : DockerHostedService
 {
     private readonly HostedServiceContext _context;
 
-    public RedisHostedService(
+    public Redis(
         HostedServiceContext context,
-        ILogger<DockerHostedService> logger,
-        bool leaveRunning = false)
+        ILogger<Redis>       logger,
+        bool                 leaveRunning = false)
         : base(logger, leaveRunning)
     {
         _context = context;

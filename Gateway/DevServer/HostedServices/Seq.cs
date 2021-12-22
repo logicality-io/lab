@@ -2,15 +2,15 @@
 using Ductus.FluentDocker.Services;
 using Logicality.Extensions.Hosting;
 
-namespace Logicality.ExampleGateway.DevServer;
+namespace Logicality.ExampleGateway.DevServer.HostedServices;
 
-public class SeqHostedService : DockerHostedService
+public class Seq : DockerHostedService
 {
     private readonly HostedServiceContext _context;
-    private const int HostPort = 5110;
+    internal const int HostPort = 5110;
     private const int ContainerPort = 80;
 
-    public SeqHostedService(
+    public Seq(
         HostedServiceContext context,
         ILogger<DockerHostedService> logger)
         : base(logger)

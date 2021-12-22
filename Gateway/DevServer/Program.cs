@@ -1,4 +1,5 @@
-﻿using Logicality.Extensions.Hosting;
+﻿using Logicality.ExampleGateway.DevServer.HostedServices;
+using Logicality.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
@@ -8,22 +9,33 @@ public class Program
 {
     internal static async Task Main(string[] args)
     {
-        var loggerConfiguration = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-            .Enrich.FromLogContext()
-            .WriteTo.Logger(l =>
-            {
-                l.WriteHostedServiceMessagesToConsole();
-            });
+        var programLogger = CreateLogConfiguration()
+            .WriteTo.Logger(l => l.WriteHostedServiceMessagesToConsole())
+            .WriteTo.Seq($"http://localhost:{Seq.HostPort}")
+            .CreateLogger();
 
-        var logger = loggerConfiguration.CreateLogger();
+        void ConfigureLogging(ILoggingBuilder loggingBuilder)
+        {
+            var logger = CreateLogConfiguration()
+                .WriteTo.Seq($"http://localhost:{Seq.HostPort}")
+                .CreateLogger();
+            loggingBuilder.AddSerilog(logger);
+        }
 
-        void ConfigureLogging(ILoggingBuilder l) => l.AddSerilog(logger);
         var context = new HostedServiceContext(ConfigureLogging);
-        var host = CreateHostBuilder(args, context).Build();
+        
+        var host = CreateHostBuilder(args, context)
+            .UseSerilog(programLogger)
+            .Build();
+
         await host.RunAsync();
     }
+
+    private static LoggerConfiguration CreateLogConfiguration() =>
+        new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+            .Enrich.FromLogContext();
 
     public static IHostBuilder CreateHostBuilder(string[] args, HostedServiceContext context) =>
         new HostBuilder()
@@ -31,26 +43,26 @@ public class Program
             .ConfigureServices(services =>
             {
                 services.AddSingleton(context);
-                services.AddTransient<RedisHostedService>();
-                services.AddTransient<LoadBalancerHostedService>();
-                services.AddTransient<Gateway1HostedService>();
-                services.AddTransient<Gateway2HostedService>();
+                services.AddTransient<Seq>();
+                services.AddTransient<Redis>();
+                services.AddTransient<LoadBalancer>();
+                services.AddTransient<HostedServices.IdentityProvider>();
+                services.AddTransient<Gateway1>();
+                services.AddTransient<Gateway2>();
+                services.AddTransient<SignIn>();
 
                 services
-                    .AddSequentialHostedServices("root",
-                        r =>
-                        {
-                            r.HostParallel("containers", p =>
-                            {
-                                p.Host<SeqHostedService>()
-                                    .Host<RedisHostedService>();
-                            });
-                            r.HostParallel("gateways", p =>
-                            {
-                                p.Host<Gateway1HostedService>()
-                                    .Host<Gateway2HostedService>();
-                            });
-                            r.Host<LoadBalancerHostedService>();
-                        });
+                    .AddSequentialHostedServices("root", r => r
+                        .Host<HostedServices.Seq>()
+                        .HostParallel("services", p => p
+                            .Host<HostedServices.IdentityProvider>()
+                            .Host<Redis>()
+                        )
+                        .Host<SignIn>()
+                        .HostParallel("gateways", g => g
+                            .Host<Gateway1>()
+                            .Host<Gateway2>()
+                        )
+                        .Host<LoadBalancer>());
             });
 }

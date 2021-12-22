@@ -1,16 +1,18 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Logicality.ExampleGateway.AuthCookieHandling;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Gateway;
+namespace Logicality.ExampleGateway.Gateway;
 
 public class Startup
 {
@@ -27,7 +29,10 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddBff()
+        services.Configure<GatewayOptions>(_configuration);
+
+        services
+            .AddBff()
             .AddRemoteApis();
 
         services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostTicketConfiguration>();
@@ -50,6 +55,12 @@ public class Startup
 
     public void Configure(IApplicationBuilder app)
     {
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            AllowedHosts     = new List<string> { "*" },
+            ForwardedHeaders = ForwardedHeaders.All,
+        });
+
         app.UseRouting();
 
         app.UseMiddleware<SignInRedirectMiddleware>();

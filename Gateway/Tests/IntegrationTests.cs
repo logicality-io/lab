@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Logicality.ExampleGateway.DevServer;
+using Logicality.ExampleGateway.DevServer.HostedServices;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shouldly;
