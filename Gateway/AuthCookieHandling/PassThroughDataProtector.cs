@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 
-namespace AuthCore;
+namespace Logicality.ExampleGateway.AuthCookieHandling;
 
 public class PassThroughDataProtector : IDataProtector
 {

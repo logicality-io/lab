@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Events;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
 public class Program
 {
@@ -32,7 +32,7 @@ public class Program
             {
                 services.AddSingleton(context);
                 services.AddTransient<RedisHostedService>();
-                services.AddTransient<GatewayLoadBalancerHostedService>();
+                services.AddTransient<LoadBalancerHostedService>();
                 services.AddTransient<Gateway1HostedService>();
                 services.AddTransient<Gateway2HostedService>();
 
@@ -50,7 +50,7 @@ public class Program
                                 p.Host<Gateway1HostedService>()
                                     .Host<Gateway2HostedService>();
                             });
-                            r.Host<GatewayLoadBalancerHostedService>();
+                            r.Host<LoadBalancerHostedService>();
                         });
             });
 }

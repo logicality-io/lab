@@ -2,22 +2,22 @@
 using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
 public class Gateway1HostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
-    private          IWebHost?            _webHost;
-    private const    int                  DefaultPort = 5001;
+    private IWebHost? _webHost;
+    private const int DefaultPort = 5001;
 
     public Gateway1HostedService(HostedServiceContext context)
     {
         _context = context;
-        Port     = context.FixedPorts ? DefaultPort : 0;
+        Port = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; set; }
-    
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var config = new ConfigurationBuilder()

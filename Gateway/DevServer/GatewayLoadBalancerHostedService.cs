@@ -1,22 +1,22 @@
-﻿using DevServer.LoadBalancer;
-using Logicality.AspNetCore.Hosting;
+﻿using Logicality.AspNetCore.Hosting;
+using Logicality.ExampleGateway.DevServer.LoadBalancer;
 using Microsoft.AspNetCore;
 using Yarp.ReverseProxy.Configuration;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
-public class GatewayLoadBalancerHostedService : IHostedService
+public class LoadBalancerHostedService : IHostedService
 {
-    private const    int                                       DefaultPort = 5000;
-    private readonly HostedServiceContext                      _context;
-    private readonly ILogger<GatewayLoadBalancerHostedService> _logger;
-    private          IWebHost?                                 _webHost;
+    private const int DefaultPort = 5000;
+    private readonly HostedServiceContext _context;
+    private readonly ILogger<LoadBalancerHostedService> _logger;
+    private IWebHost? _webHost;
 
-    public GatewayLoadBalancerHostedService(HostedServiceContext context, ILogger<GatewayLoadBalancerHostedService> logger)
+    public LoadBalancerHostedService(HostedServiceContext context, ILogger<LoadBalancerHostedService> logger)
     {
         _context = context;
-        _logger  = logger;
-        Port     = context.FixedPorts ? DefaultPort : 0;
+        _logger = logger;
+        Port = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; }
@@ -27,7 +27,7 @@ public class GatewayLoadBalancerHostedService : IHostedService
         var routeConfig = new RouteConfig
         {
             ClusterId = "gateway",
-            Match     = new RouteMatch { Path = "{**catch-all}" }
+            Match = new RouteMatch { Path = "{**catch-all}" }
         };
         routes.Add("route1", routeConfig);
 
@@ -73,7 +73,7 @@ public class GatewayLoadBalancerHostedService : IHostedService
         {
             ReverseProxy = new Data
             {
-                Routes   = routes,
+                Routes = routes,
                 Clusters = clusters
             };
         }

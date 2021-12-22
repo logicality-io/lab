@@ -2,21 +2,21 @@
 using Ductus.FluentDocker.Services;
 using Logicality.Extensions.Hosting;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
 public class SeqHostedService : DockerHostedService
 {
     private readonly HostedServiceContext _context;
-    private const    int                  HostPort = 5110;
-    private const    int                  ContainerPort   = 80;
+    private const int HostPort = 5110;
+    private const int ContainerPort = 80;
 
     public SeqHostedService(
-        HostedServiceContext         context,
+        HostedServiceContext context,
         ILogger<DockerHostedService> logger)
         : base(logger)
     {
-        _context  = context;
-        SinkUri   = new Uri($"http://localhost:{HostPort}");
+        _context = context;
+        SinkUri = new Uri($"http://localhost:{HostPort}");
     }
 
     protected override string ContainerName => "ExampleGatewaySeq";

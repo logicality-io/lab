@@ -1,14 +1,14 @@
-namespace DevServer.LoadBalancer
+namespace Logicality.ExampleGateway.DevServer.LoadBalancer
 {
     public class LoadBalancerStartup
     {
-        private readonly IConfiguration      _configuration;
+        private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
 
         public LoadBalancerStartup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
-            _environment   = environment;
+            _environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)

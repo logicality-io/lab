@@ -3,12 +3,12 @@ using Microsoft.AspNetCore;
 using Serilog;
 using Signin;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
 public class SignInHostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
-    private          IWebHost?            _webHost;
+    private IWebHost? _webHost;
 
     public SignInHostedService(HostedServiceContext context)
     {

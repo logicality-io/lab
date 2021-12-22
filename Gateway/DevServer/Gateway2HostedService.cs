@@ -3,18 +3,18 @@ using Logicality.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
 using Serilog;
 
-namespace DevServer;
+namespace Logicality.ExampleGateway.DevServer;
 
 public class Gateway2HostedService : IHostedService
 {
     private readonly HostedServiceContext _context;
-    private          IWebHost?            _webHost;
-    private const    int                  DefaultPort = 5002;
+    private IWebHost? _webHost;
+    private const int DefaultPort = 5002;
 
     public Gateway2HostedService(HostedServiceContext context)
     {
         _context = context;
-        Port     = context.FixedPorts ? DefaultPort : 0;
+        Port = context.FixedPorts ? DefaultPort : 0;
     }
 
     public int Port { get; set; }

@@ -1,4 +1,4 @@
-﻿using AuthCore;
+﻿using Logicality.ExampleGateway.AuthCookieHandling;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;

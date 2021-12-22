@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
-using AuthCore;
 using Duende.Bff;
 using Duende.Bff.Yarp;
+using Logicality.ExampleGateway.AuthCookieHandling;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
@@ -34,7 +34,7 @@ public class Startup
         services.AddTransient<ISessionRevocationService, SessionRevocationService>();
 
         services.AddSingleton<IDataProtectionProvider, InsecureDataProtectionProvider>();
-        services.AddTransient<ITicketStore, FileBasedTicketStore>();
+        services.AddTransient<ITicketStore, RedisCacheTicketStore>();
 
         services.AddAuthentication(options =>
             {
@@ -45,7 +45,6 @@ public class Startup
                 options.Cookie.Name     = CookieConfiguration.CookieName;
                 options.Cookie.SameSite = CookieConfiguration.SameSiteMode;
                 options.Cookie.HttpOnly = true;
-                options.SessionStore    = new FileBasedTicketStore();
             });
     }
 

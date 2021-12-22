@@ -11,7 +11,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\AuthCore\AuthCore.csproj" />
+    <ProjectReference Include="..\AuthCookieHandling\AuthCookieHandling.csproj" />
+    <ProjectReference Include="..\AuthCore\AuthCookieHandling.csproj" />
     <ProjectReference Include="..\Profile.Domain\Profile.Domain.csproj" />
   </ItemGroup>
 </Project>

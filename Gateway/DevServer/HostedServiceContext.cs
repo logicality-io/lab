@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Serilog.Core;
 
-namespace DevServer
+namespace Logicality.ExampleGateway.DevServer
 {
     public class HostedServiceContext
     {
@@ -10,12 +10,12 @@ namespace DevServer
         public HostedServiceContext(Action<ILoggingBuilder> configureLogging, bool fixedPorts = true)
         {
             ConfigureLogging = configureLogging;
-            FixedPorts            = fixedPorts;
+            FixedPorts = fixedPorts;
         }
 
         public Action<ILoggingBuilder> ConfigureLogging { get; }
 
-        public bool                    FixedPorts       { get; }
+        public bool FixedPorts { get; }
 
         public RedisHostedService Redis
         {
@@ -23,9 +23,9 @@ namespace DevServer
             set => Add(nameof(RedisHostedService), value);
         }
 
-        public GatewayLoadBalancerHostedService LoadBalancer
+        public LoadBalancerHostedService LoadBalancer
         {
-            get => Get<GatewayLoadBalancerHostedService>(nameof(LoadBalancer));
+            get => Get<LoadBalancerHostedService>(nameof(LoadBalancer));
             set => Add(nameof(LoadBalancer), value);
         }
 
