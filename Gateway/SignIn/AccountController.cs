@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SignIn;
+namespace Logicality.ExampleGateway.SignIn;
 
 public class AccountController : Controller
 {

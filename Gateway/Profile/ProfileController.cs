@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Profile;
+namespace Logicality.ExampleGateway.Profile;
 
 [Authorize("RequireInteractiveUser")]
 public class ProfileController : ControllerBase

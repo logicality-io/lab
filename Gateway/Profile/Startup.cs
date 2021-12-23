@@ -1,4 +1,4 @@
-﻿namespace Profile;
+﻿namespace Logicality.ExampleGateway.Profile;
 
 public class Startup
 {

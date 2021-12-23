@@ -2,14 +2,11 @@
 // See LICENSE in the project root for license information.
 
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
-using System;
 
-namespace SignIn
+namespace Logicality.ExampleGateway.SignIn
 {
     public class Program
     {

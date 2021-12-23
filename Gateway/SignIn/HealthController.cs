@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SignIn;
+namespace Logicality.ExampleGateway.SignIn;
 
 [Route("api/{controller}")]
 public class HealthController : ControllerBase

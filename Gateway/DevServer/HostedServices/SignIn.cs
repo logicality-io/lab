@@ -1,6 +1,7 @@
 ﻿using Logicality.AspNetCore.Hosting;
+using Logicality.ExampleGateway.SignIn;
+
 using Microsoft.AspNetCore;
-using SignIn;
 
 namespace Logicality.ExampleGateway.DevServer.HostedServices;
 

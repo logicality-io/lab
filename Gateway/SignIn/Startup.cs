@@ -1,10 +1,11 @@
 ﻿using Logicality.ExampleGateway.AuthCookieHandling;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace SignIn;
+namespace Logicality.ExampleGateway.SignIn;
 
 public class Startup
 {
