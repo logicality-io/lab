@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Signin;
+namespace SignIn;
 
 [Route("api/{controller}")]
 public class HealthController : ControllerBase

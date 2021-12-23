@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityProvider", "IdentityProvider\IdentityProvider.csproj", "{93CC0029-1665-4759-9D29-FAE2F6700346}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignIn", "Signin\SignIn.csproj", "{2AECF8F9-2596-4442-97D9-4785DAB51E53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignIn", "SignIn\SignIn.csproj", "{2AECF8F9-2596-4442-97D9-4785DAB51E53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FDEED042-04E0-4A28-82A9-987CEC67A81A}"
 	ProjectSection(SolutionItems) = preProject

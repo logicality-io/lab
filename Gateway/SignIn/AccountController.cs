@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Signin;
+namespace SignIn;
 
 public class AccountController : Controller
 {
